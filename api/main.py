@@ -99,11 +99,12 @@ if cors_origins_env:
 app.add_middleware(
     CORSMiddleware,
     allow_origins=allowed_origins if not os.getenv("ALLOW_ALL_CORS") else ["*"],
-    allow_origin_regex=r"https:\/\/.*\.vercel\.app",
+    allow_origin_regex=r"https:\/\/(.*\.(vercel\.app|onrender\.com)|localhost(:\d+)?)",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
 
 
 
