@@ -30,8 +30,14 @@ SUPPORTED_IMAGE_TYPES = ["jpg", "jpeg", "png", "webp"]
 SUPPORTED_DOC_TYPES   = ["pdf", "png", "jpg", "jpeg"]
 
 # ─── Database ────────────────────────────────────────────────
-DATABASE_PATH = os.getenv("DATABASE_PATH", "truthlens.db")
+# On serverless platforms (Vercel, AWS Lambda), the deployment directory is strictly read-only.
+# The only writable location is /tmp.
+if os.getenv("VERCEL") or os.getenv("AWS_LAMBDA_FUNCTION_NAME") or os.getenv("SERVERLESS"):
+    DATABASE_PATH = os.getenv("DATABASE_PATH", "/tmp/truthlens.db")
+else:
+    DATABASE_PATH = os.getenv("DATABASE_PATH", "truthlens.db")
 
 # ─── Forensics ───────────────────────────────────────────────
 ELA_QUALITY   = 90      # JPEG quality for ELA
 ELA_SCALE     = 20      # Amplification scale for ELA diff
+

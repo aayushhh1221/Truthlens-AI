@@ -1,26 +1,47 @@
-"""
-TruthLens AI 2.0 — Database Layer (SQLite)
-Schema: analyses, claims, evidence, feedback, documents, model_versions, analytics_events
-"""
+import os
 import sqlite3
 import json
 from datetime import datetime
 from utils.config import DATABASE_PATH
 from utils.helpers import ts_now
 
+_db_initialized = False
 
 # ─── Connection ───────────────────────────────────────────────
 
 def get_conn():
-    conn = sqlite3.connect(DATABASE_PATH, check_same_thread=False)
+    global DATABASE_PATH, _db_initialized
+    
+    # Ensure directory exists if path is specified
+    db_dir = os.path.dirname(DATABASE_PATH)
+    if db_dir:
+        try:
+            os.makedirs(db_dir, exist_ok=True)
+        except Exception:
+            pass
+
+    try:
+        conn = sqlite3.connect(DATABASE_PATH, check_same_thread=False)
+    except sqlite3.OperationalError:
+        # Fallback for serverless environments (Vercel / Lambda) where current dir is read-only
+        DATABASE_PATH = "/tmp/truthlens.db"
+        conn = sqlite3.connect(DATABASE_PATH, check_same_thread=False)
+
     conn.row_factory = sqlite3.Row
+
+    if not _db_initialized:
+        init_database(conn)
+        _db_initialized = True
+
     return conn
 
 
 # ─── Init ─────────────────────────────────────────────────────
 
-def init_database():
+def init_database(existing_conn=None):
     """Create all tables if they do not exist."""
+    global _db_initialized
+
     ddl = """
     CREATE TABLE IF NOT EXISTS users (
         id          INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -104,8 +125,13 @@ def init_database():
     CREATE INDEX IF NOT EXISTS idx_evidence_claim ON evidence(claim_id);
     CREATE INDEX IF NOT EXISTS idx_claims_analysis ON claims(analysis_id);
     """
-    with get_conn() as conn:
-        conn.executescript(ddl)
+    if existing_conn is not None:
+        existing_conn.executescript(ddl)
+    else:
+        with get_conn() as conn:
+            conn.executescript(ddl)
+    _db_initialized = True
+
 
 
 # ─── User Tracking ────────────────────────────────────────────

@@ -10,8 +10,15 @@ from fastapi.responses import JSONResponse
 from api.routes.analysis import router as analysis_router
 from api.routes.analytics import router as analytics_router
 from api.routes.history import router as history_router
+from database.db import init_database
+
+try:
+    init_database()
+except Exception:
+    pass
 
 # ─── App Definition ──────────────────────────────────────────────
+
 
 app = FastAPI(
     title="TruthLens AI API",
