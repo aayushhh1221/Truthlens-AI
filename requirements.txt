@@ -17,7 +17,7 @@ google-genai==2.8.0
 # Scientific, Statistical & Data Processing
 numpy==1.26.4
 scipy==1.14.1
-pandas==2.2.3
+
 
 # Image Forensics (ELA, EXIF, Noise Analysis)
 Pillow==10.4.0
@@ -26,8 +26,5 @@ Pillow==10.4.0
 pytesseract==0.3.13
 pypdf==5.0.1
 
-# Semantic Embeddings & Clustering (all-MiniLM-L6-v2)
-sentence-transformers==3.2.1
-torch==2.4.1
 
 
