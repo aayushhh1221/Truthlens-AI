@@ -140,8 +140,10 @@ Return ONLY valid JSON (no markdown, no extra text):
 
     try:
         return call_gemini_json(prompt, image_bytes, mime_type)
-    except Exception:
+    except Exception as e:
+        print(f"[ImageAnalyzer Gemini Vision Error] {e}")
         return _demo_vision_result(forensics)
+
 
 
 def _demo_vision_result(forensics: dict) -> dict:

@@ -156,7 +156,9 @@ No markdown, no extra text.
     try:
         return call_gemini_json(prompt, image_bytes, mime_type)
     except Exception as e:
+        print(f"[DocumentForensics Gemini Error] {e}")
         return {"error": str(e), **_demo_doc_result(doc_type)}
+
 
 
 def _demo_doc_result(doc_type: str) -> dict:

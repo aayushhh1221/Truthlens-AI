@@ -18,7 +18,8 @@ APP_VERSION        = "2.0.0"
 APP_TAGLINE        = "Multi-Agent Misinformation & Deepfake Detection"
 
 # ─── Gemini ──────────────────────────────────────────────────
-GEMINI_MODEL       = os.getenv("GEMINI_MODEL", "gemini-3.6-flash")
+GEMINI_MODEL       = os.getenv("GEMINI_MODEL", "gemini-2.0-flash")
+
 
 
 # ─── Thresholds ──────────────────────────────────────────────

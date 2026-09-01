@@ -14,7 +14,8 @@ services:
       - key: GEMINI_API_KEY
         sync: false
       - key: GEMINI_MODEL
-        value: gemini-3.6-flash
+        value: gemini-2.0-flash
+
 
   # ─── TruthLens AI 2.0 Frontend (React Static Site) ──────────
   - type: web

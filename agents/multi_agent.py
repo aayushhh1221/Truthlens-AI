@@ -70,8 +70,10 @@ Return ONLY valid JSON:
 }}"""
         try:
             return call_gemini_json(prompt)
-        except Exception:
+        except Exception as e:
+            print(f"[ClaimExtractor Error] {e}")
             return self._demo_claims(text)
+
 
     def _demo_claims(self, text: str) -> dict:
         sentences = [s.strip() for s in re.split(r"[.!?]+", text) if len(s.strip()) > 20]
@@ -324,8 +326,10 @@ Return ONLY valid JSON:
 }}"""
         try:
             return call_gemini_json(prompt)
-        except Exception:
+        except Exception as e:
+            print(f"[ExplainabilityAgent Error] {e}")
             return self._demo_explanation(risk)
+
 
     def _demo_explanation(self, risk: dict) -> dict:
         return {
