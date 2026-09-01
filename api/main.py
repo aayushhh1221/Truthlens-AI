@@ -79,19 +79,32 @@ async def security_and_rate_limit_middleware(request: Request, call_next):
     return response
 
 
+# ─── CORS & Security Middleware ──────────────────────────────────
+import os
+import time
+from collections import defaultdict
+
+# Dynamic allowed origins for development & cloud deployments (Vercel, Render, etc.)
+cors_origins_env = os.getenv("CORS_ORIGINS", "")
+allowed_origins = [
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+    "http://localhost:8000",
+    "http://127.0.0.1:8000",
+    "https://truthlens-ai-iota.vercel.app",
+]
+if cors_origins_env:
+    allowed_origins.extend([o.strip() for o in cors_origins_env.split(",") if o.strip()])
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:5173",
-        "http://127.0.0.1:5173",
-        "http://localhost:8000",
-        "http://127.0.0.1:8000",
-        "https://truthlens-ai-iota.vercel.app",
-    ],
+    allow_origins=allowed_origins if not os.getenv("ALLOW_ALL_CORS") else ["*"],
+    allow_origin_regex=r"https:\/\/.*\.vercel\.app",
     allow_credentials=True,
-    allow_methods=["GET", "POST", "OPTIONS"],
+    allow_methods=["*"],
     allow_headers=["*"],
 )
+
 
 
 # ─── Global Error Handler ────────────────────────────────────────
