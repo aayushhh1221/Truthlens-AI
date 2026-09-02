@@ -48,14 +48,16 @@ export const AnalyticsPage: React.FC = () => {
     api.getStats().then(setStats).catch(() => {});
   }, []);
 
-  const total = stats?.total ?? 5418;
-  const fake = stats?.fake ?? 1482;
-  const verifiedReal = total > fake ? total - fake : 3241;
+  const isLive = stats !== null;
+  const total = stats ? stats.total : 5418;
+  const fake = stats ? stats.fake : 1482;
+  const verifiedReal = stats ? Math.max(0, total - fake) : 3241;
 
   // Real data-driven outcome distribution
-  const realPct = total > 0 ? Math.round((verifiedReal / total) * 100) : 60;
-  const fakePct = total > 0 ? Math.round((fake / total) * 100) : 25;
-  const unverifiedPct = Math.max(0, 100 - realPct - fakePct);
+  const realPct = total > 0 ? Math.round((verifiedReal / total) * 100) : (isLive ? 0 : 60);
+  const fakePct = total > 0 ? Math.round((fake / total) * 100) : (isLive ? 0 : 25);
+  const unverifiedPct = total > 0 ? Math.max(0, 100 - realPct - fakePct) : (isLive ? 0 : 15);
+
 
   return (
     <main id="main-content" tabIndex={-1}>
@@ -82,17 +84,18 @@ export const AnalyticsPage: React.FC = () => {
           {/* Top stats */}
           <div className="analytics-grid" role="list" aria-label="Key analytics metrics">
             {[
-              { label: t('dashboard.total'), value: total.toLocaleString(), delta: 'Live count', icon: BarChart2, positive: true },
-              { label: t('analytics.verifiedReal'), value: verifiedReal.toLocaleString(), delta: `${realPct}% of total volume`, icon: TrendingUp, positive: true },
-              { label: t('analytics.flaggedFake'), value: fake.toLocaleString(), delta: `${fakePct}% of total volume`, icon: TrendingDown, positive: false },
+              { label: t('dashboard.total'), value: total.toLocaleString(), delta: isLive ? 'Live count' : 'Demo volume', icon: BarChart2, positive: true },
+              { label: t('analytics.verifiedReal'), value: verifiedReal.toLocaleString(), delta: total > 0 ? `${realPct}% of total volume` : (isLive ? '0% verified' : '60% of volume'), icon: TrendingUp, positive: true },
+              { label: t('analytics.flaggedFake'), value: fake.toLocaleString(), delta: total > 0 ? `${fakePct}% of total volume` : (isLive ? '0% flagged' : '25% of volume'), icon: TrendingDown, positive: false },
               {
                 label: t('analytics.accuracy'),
-                value: stats?.accuracy ? `${stats.accuracy}%` : '98.4%',
+                value: stats && stats.fb_total > 0 && stats.accuracy ? `${stats.accuracy}%` : (total > 0 ? '98.4%' : (isLive ? '100%' : '98.4%')),
                 delta: `${stats?.fb_total ?? 0} operator ratings`,
                 icon: Activity,
                 positive: true,
               },
             ].map(({ label, value, delta, icon: Icon, positive }) => (
+
               <div key={label} className="analytics-stat-card" role="listitem">
                 <Icon size={18} color="var(--c-blue)" aria-hidden="true" />
                 <div className="analytics-stat-value" style={{ marginTop: '10px' }}>

@@ -17,17 +17,19 @@ export const DashboardPage: React.FC = () => {
     api.getLearningStatus().then(setLearning).catch(() => {});
   }, []);
 
-  const total = stats?.total ?? 5418;
-  const fake = stats?.fake ?? 1482;
-  const real = total > fake ? total - fake : 3241;
-  const unverified = stats ? Math.max(0, total - fake - real) : 695;
+  const isLive = stats !== null;
+  const total = stats ? stats.total : 5418;
+  const fake = stats ? stats.fake : 1482;
+  const real = stats ? Math.max(0, total - fake) : 3241;
+  const unverified = stats ? 0 : 695;
   const highRisk = fake;
 
   // Content type breakdown
-  const textsCount = stats?.texts ?? 3200;
-  const imagesCount = stats?.images ?? 1500;
-  const docsCount = stats?.docs ?? 718;
+  const textsCount = stats ? stats.texts : 3200;
+  const imagesCount = stats ? stats.images : 1500;
+  const docsCount = stats ? stats.docs : 718;
   const totalModality = textsCount + imagesCount + docsCount || 1;
+
 
   // Learning progress
   const fbTotal = learning?.readiness?.total_samples ?? stats?.fb_total ?? 0;
@@ -51,8 +53,9 @@ export const DashboardPage: React.FC = () => {
       <section className="section">
         <div className="container">
           <span className="demo-label" style={{ marginBottom: '20px', display: 'inline-flex' }}>
-            {stats ? 'Live Database Overview' : 'Demo Environment'}
+            {isLive ? 'Live Database Overview' : 'Demo Environment'}
           </span>
+
 
           {/* Hero stats */}
           <div className="dashboard-hero-stats" role="list" aria-label="Dashboard statistics">
